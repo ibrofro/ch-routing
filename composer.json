@@ -1,0 +1,17 @@
+{
+    "name": "global/ch-routing",
+    "description": "A routing system",
+    "license": "MIT License",
+    "autoload": {
+        "psr-4": {
+            "Global\\ChRouting\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "ibrofro",
+            "email": "ibrofro0@gmail.com"
+        }
+    ],
+    "require": {}
+}
