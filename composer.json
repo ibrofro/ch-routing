@@ -4,7 +4,7 @@
     "license": "MIT License",
     "autoload": {
         "psr-4": {
-            "Global\\ChRouting\\": "src/"
+            "Routing\\": "src/"
         }
     },
     "authors": [
@@ -13,5 +13,11 @@
             "email": "ibrofro0@gmail.com"
         }
     ],
-    "require": {}
+    "require-dev": {
+        "symfony/var-dumper": "^6.2",
+        "phpunit/phpunit": "^9.5"
+    },
+    "require": {
+        "symfony/http-foundation": "^6.2"
+    }
 }
