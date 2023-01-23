@@ -1,17 +1,15 @@
 <?php
 namespace Routing;
-use TheSeer\Tokenizer\Exception;
 
 class Route {
 
-
-    protected  $pathname;
-    protected  $regex;
-    protected  $host;
-    protected  $controller;
-    protected  $additionnal;
-    protected $request;
-
+    protected $allowedMethods = ["get","put","post","patch","delete"];
+    protected $pathname;
+    protected $regex;
+    protected $host;
+    protected $controller;
+    protected $additionnal;
+    protected $method;
 
     
     public function __construct(string $pathname){
@@ -56,43 +54,17 @@ class Route {
         return $this->additionnal;
     }
 
+    public function getMethod():string{
+        return $this->method;
+    }
 
-
+    public function setMethod(string $method):self{
+        if(!in_array($method,$this->allowedMethods)){
+            throw new \Exception("Method not allowed");
+        }
+        $this->method = $method;
+        return $this;
+    }
     
-    /**
-     * The HTTP get method 
-     * @param string $pathname
-     * @param array $obj
-     * @return self
-     */
-    // static function get(string $pathname,array $obj){
-    //     // The pathname is mandatory.
-    //     if(!isset($pathname)){
-    //         throw new \Exception("The pathname is mandatory");
-    //     }
-
-    //     // Create an instance of this class.
-    //     $instance =  new self(
-    //         $pathname,
-    //         $obj["_regex"] ?? null,
-    //         $obj["_host"] ?? null,
-    //         $obj["_controller"] ?? null,
-    //         $obj["_additionnal"] ?? null,
-    //     );
-
-    //     dd($instance);
-    //     // Add it to the collection of Route.
-    //     self::addToCollection($instance);
-    //     return $_host;
-    // }
-
-    
-
-
-
-
-
-
-
 }
 

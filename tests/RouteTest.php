@@ -1,6 +1,7 @@
 <?php
 use PHPUnit\Framework\TestCase;
 use Routing\Route;
+use Routing\Router;
 final class RouteTest extends TestCase{
 
     public function testgetPathname(){
@@ -64,9 +65,23 @@ final class RouteTest extends TestCase{
         $route->setAdditionnal($fakeAditionnal);
         $this->assertSame($fakeAditionnal,$route->getAdditionnal());
     }
+    public function testgetMethod(){
+        $fakePath = "/model/color";
+        $fakeMethod = "get";
+        $route = new Route($fakePath);
+        $route->setMethod($fakeMethod);
+        $this->assertSame($fakeMethod,$route->getMethod());
+        
+    }
+
+    public function testsetMethod(){
+        $fakePath = "/model/color";
+        $route = new Route($fakePath);
+        $this->expectException(Exception::class);
+        $route->setMethod("GETT");
+    }
 
 
-
-   
+  
 
 }
