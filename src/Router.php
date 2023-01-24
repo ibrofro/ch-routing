@@ -43,4 +43,13 @@ class Router{
         // 3.Add the route to the collection.
         array_push(self::$routesArr, $route);
     }
+
+    public static function match (callable $fn)
+    {
+
+        // match
+        // if match execute callback.
+        // $fn($route, $request);
+        // Throw Exception.
+    }
 }

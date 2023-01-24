@@ -10,8 +10,6 @@ class Route {
     protected $controller;
     protected $additionnal;
     protected $method;
-
-    
     public function __construct(string $pathname){
         $this->setPathname($pathname);
     }
@@ -41,8 +39,8 @@ class Route {
     }
 
     public function setController(?array $controllerArr):self{
-        isset($controllerArr[0]) ?  : throw new Exception("Controller not defined");
-        isset($controllerArr[1]) ?  : throw new Exception("Please defined the method");
+        isset($controllerArr[0]) ?  : throw new \Exception("Controller not defined");
+        isset($controllerArr[1]) ?  : throw new \Exception("Please defined the method");
         $this->controller = $controllerArr;
         return $this;
     }

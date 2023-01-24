@@ -1,12 +1,13 @@
 <?php
 use PHPUnit\Framework\TestCase;
 use Routing\Drivers\SuperGlobalDriver;
-use Symfony\Component\HttpFoundation\Request;
-
-final class SuperGlobalDriverTest extends TestCase{
+use Symfony\Component\HttpFoundation\Request as HttpFoundationRequest;
+use Routing\Request;
+final class RequestTest extends TestCase{
 
     public $uri;
     public $request;
+    public  $httpFoundationRequest;
     public $superGlobalDriver;
     public $scheme = "http://";
     public $host = "www.ch-routing.com";
@@ -18,24 +19,30 @@ final class SuperGlobalDriverTest extends TestCase{
         // Associate parameter to create a valid FQDN.
         $uri = $this->scheme . $this->host . $this->pathname. $this->queryString;
         // Create a fake request for the testing.
-        $request = Request::create(
+        $httpFoundationRequest = HttpFoundationRequest::create(
         $uri,
         $this->method,
     );
-        $this->request = $request;
+        $this->httpFoundationRequest = $httpFoundationRequest;
     }
 
     public function setupDriver(){
         // You need to setup the request first.
-        if (!isset($this->request)):
+        if (!isset($this->httpFoundationRequest)):
           throw new \Exception("You need to setup the driver first.");
         endif;  
-        $this->superGlobalDriver = new SuperGlobalDriver($this->request);
+        $this->superGlobalDriver = new SuperGlobalDriver($this->httpFoundationRequest);
+
+    }
+
+    public function initializeRequest(){
+        $this->request = new Request($this->superGlobalDriver);
     }
 
     public function setupTestDependencies(){
         $this->setupRequest();
         $this->setupDriver();
+        $this->initializeRequest();
     }
     protected function setUp():void
     {
@@ -43,23 +50,23 @@ final class SuperGlobalDriverTest extends TestCase{
         $this->setupTestDependencies();
     }
     public function testgetMethod(){
-        $this->assertSame($this->method, $this->superGlobalDriver->getMethod());
+        $this->assertSame($this->method, $this->request->getMethod());
     }
     public function testgetScheme(){
         $scheme =  str_replace("://","",$this->scheme);
-        $this->assertSame($scheme, $this->superGlobalDriver->getScheme());
+        $this->assertSame($scheme, $this->request->getScheme());
         
     }
     public function testgetHost(){
-        $this->assertSame($this->host, $this->superGlobalDriver->getHost());
+        $this->assertSame($this->host, $this->request->getHost());
         
     }
     public function testgetportNumber(){
-        $this->assertSame($this->portNumber, $this->superGlobalDriver->getPortNumber());
+        $this->assertSame($this->portNumber, $this->request->getPortNumber());
         
     }
     public function testgetqueryString(){
-        $this->assertSame(substr($this->queryString,1), $this->superGlobalDriver->getQueryString());
+        $this->assertSame(substr($this->queryString,1), $this->request->getQueryString());
         
     }
 
