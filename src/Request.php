@@ -21,8 +21,15 @@ class Request {
         $this->method = $driver->getMethod(); 
         $this->pathName = $driver->getPathname(); 
         $this->queryString = $driver->getQueryString(); 
-        $this->portNumber = $driver->getPortNumber(); 
+        $this->portNumber = $driver->getPortNumber();
     
+    }
+    public function getFullUrl():string{
+        $url = $this->scheme."://";
+        $url .= $this->host;
+        $url .= $this->pathName;
+        $url .= $this->queryString;
+        return $url;
     }
     public function setMethod():self{
 

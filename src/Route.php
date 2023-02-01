@@ -10,10 +10,13 @@ class Route {
     protected $controller;
     protected $additionnal;
     protected $method;
+    protected $scheme;
     public function __construct(string $pathname){
+        isset($pathname) ?: throw new \Exception("Pathname is not defined");    
         $this->setPathname($pathname);
     }
     public function setPathname(?string $pathname):self{
+        isset($pathname) ?: throw new \Exception("Pathname is not defined");    
         $this->pathname = $pathname;
         return $this;
     }
@@ -24,17 +27,24 @@ class Route {
         $this->host = $host;
         return $this;
     }
-    public function getHost():string{
+    public function getHost():string|null{
         return $this->host;
     }
     public function setRegex(?array $regexArr):self{
         $this->regex = $regexArr;
         return $this;
     }
-    public function getRegex():array{
+    public function getRegex():array|null{
         return $this->regex;
     }
-    public function getController():array{
+    public function setScheme(?string $scheme):self{
+        $this->scheme = $scheme;
+        return $this;
+    }
+    public function getScheme():string|null{
+        return $this->scheme;
+    }
+    public function getController():array|null{
         return $this->controller ;
     }
 
@@ -48,7 +58,7 @@ class Route {
         $this->additionnal = $additionnalArr;
         return $this;
     }
-    public function getAdditionnal():array{
+    public function getAdditionnal():array|null{
         return $this->additionnal;
     }
 

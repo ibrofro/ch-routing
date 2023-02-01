@@ -7,44 +7,50 @@ use Routing\Drivers\SuperGlobalDriver;
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
-$req = Request::create(
-    "http://www.go.com/product?color=red&price=2500");
-dd($req->getQueryString(),$req->getPathInfo());
+Router::get("/name/color");
+
+// dd(Request::createFromGlobals()->getUri());
+// $req = Request::create(
+//     "http://www.go.com/product?color=red&price=2500"
+// );
 
 
-    //code...
-    $request = Request::createFromGlobals();
-    $superGlobalDriver = new SuperGlobalDriver($request);
+// dd($req->getQueryString(), $req->getPathInfo());
+
+// dd(
+//     $superGlobalDriver->getScheme(),
+//     $superGlobalDriver->getMethod(),
+//     $superGlobalDriver->getHost(),
+//     $superGlobalDriver->getPortNumber(),
+//     $superGlobalDriver->getQueryString()
+// );
+// dd(preg_match("//"))
 
 
-dd(
-    $superGlobalDriver->getScheme(),
-    $superGlobalDriver->getMethod(),
-    $superGlobalDriver->getHost(),
-    $superGlobalDriver->getPortNumber(),
-    $superGlobalDriver->getQueryString()
+Router::get(
+    "/zone/location",
+    [
+        "_host" => "www.facebook.com",
+        "_controller" => [stdClass::class, "locate"],
+        "_regex" => ["name" => "/w+/"],
+        "_additionnal" => ["request" => "second one"],
+    ]
 );
-Router::get("/name/war",
-[
-    "_host"=>"www.google.com",
-    "_controller"=>[stdClass::class,"save"],
-    "_regex"=> ["name"=>"/w+/"],
-    // "_additionnal"=> ["request"=>$_SERVER],
-    "_additionnal"=> ["request"=>"Requesto"],
+// Router::get(
+//     "/name/color",
+//     [
+//         "_host" => "www.google.com",
+//         "_controller" => [stdClass::class, "save"],
+//         "_regex" => ["name" => "/w+/"],
+//         "_scheme"=> "http",
+//         // "_additionnal"=> ["request"=>$_SERVER],
+//         "_additionnal" => ["request" => "Requesto"],
 
 
-]);
-
-Router::get("/zone/location",
-[
-    "_host"=>"www.facebook.com",
-    "_controller"=>[stdClass::class,"locate"],
-    "_regex"=> ["name"=>"/w+/"],
-    // "_additionnal"=> ["request"=>$_SERVER],
-    "_additionnal"=> ["request"=>"second one"],
-
-]);
-dd(Router::$routesArr);
+//     ]
+// );
+Router::match();
+// dd(Router::$routesArr);
 // $ins = new Route();
 
 // // 1.Set the routes
@@ -86,10 +92,4 @@ dd(Router::$routesArr);
 //     // Do wathever you want here.
 //     throw new Exception("route not found");
 // }
-
-
-
-
-
-
 
