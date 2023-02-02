@@ -32,28 +32,6 @@ class Resolver {
 
         return $regexArr;
 
-        // $route->name;
-        // $host = $route->getHost();
-        // $pathName = $route->getPathname();
-
-
-        // $regex = "";
-        // $option = "";
-
-        // if(isset($route->scheme)){
-        //     $regex += $route->scheme."://";
-        // }
-
-        // if(isset($host)){
-        //     $regex += $host;
-        // }
-        // if(isset($pathName)){
-        //     $regex += $pathName;
-        // }
-
-        // $regex += $route->pathname;
-
-        // dd($regex);
     }
 
     public function resolve():Route|null{
