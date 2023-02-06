@@ -44,13 +44,26 @@ class Route {
     public function getScheme():string|null{
         return $this->scheme;
     }
-    public function getController():array|null{
+    public function getController():array|callable|null{
         return $this->controller ;
     }
 
-    public function setController(?array $controllerArr):self{
+    public function setController(callable|array $controller):self{
+        // Reset controller
+        $this->controller = null;
+        // If it's a callable
+        if(is_callable($controller)){
+            $this->controller = $controller;
+            return $this;
+        }
+        $controllerArr = $controller;
+        // If not a callable it should an array [namespace::class,"method"]
+        is_array($controllerArr) ? : throw new \Exception("controller for route "
+        .$this->pathname.
+        " must be a callable or array[class,method]");
         isset($controllerArr[0]) ?  : throw new \Exception("Controller not defined");
         isset($controllerArr[1]) ?  : throw new \Exception("Please defined the method");
+        
         $this->controller = $controllerArr;
         return $this;
     }
@@ -72,6 +85,41 @@ class Route {
         }
         $this->method = $method;
         return $this;
+    }
+
+    public function executeController(array $data = []){
+        if(empty($this->controller)){
+            throw new \Exception("Controller for route "
+             . $this->pathname . " not found");
+        }
+
+        if(is_callable($this->controller)){
+            // call_user_func($this->controller,$data);
+            return call_user_func_array($this->controller, $data);
+        }
+
+        // Verification wether controller is a callable
+        // or class already done when we assign the controller to 
+        // the route.
+        $controller = $this->controller[0];
+        $method = $this->controller[1];
+
+        if(!class_exists($controller)){
+            throw new \Exception("Class ".$controller." not found");
+        }
+        if(!method_exists($controller,$method)){
+            throw new \Exception("method ".$method." not found on class ".$controller);
+        }
+        // Check if the class have a constructor
+        $ins = new \ReflectionClass($controller);
+        $constructor = $ins->getConstructor();
+        if(!isset($constructor)){
+            $controller = new $controller();
+            return call_user_func_array(array($controller, $method), $data);
+        }else{
+            throw new \Exception("Your controller class have a constructor use a callback function to instantiate in your route. Please refer to documentation");
+        }
+        
     }
     
 }

@@ -9,7 +9,7 @@ final class RouterTest extends TestCase{
         $fakePath = "/model/color";
         $route = new Route($fakePath);
         $fakeOptions = [
-            "_host" => "www.google.com",
+            "_host" => "www.test.com",
             "_controller" => [stdClass::class, "save"],
             "_regex" => ["model" => "/w+/"],
             "_additionnal" => ["request" => "Requesto"]
@@ -22,6 +22,10 @@ final class RouterTest extends TestCase{
         $this->assertSame($route->getAdditionnal(), $fakeOptions["_additionnal"]);
    }
 
+
+
+
+   
     
 
    

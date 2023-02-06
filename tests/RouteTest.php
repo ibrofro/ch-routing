@@ -81,6 +81,64 @@ final class RouteTest extends TestCase{
         $route->setMethod("GETT");
     }
 
+    public function testexecuteController(){
+        $fakePath = "/model/color";
+        $route = new Route($fakePath);
+        
+        // Test for callback controller.
+        $route->setController(function ($param) {
+            return $param;
+        });
+        $result = $route->executeController(["param"=>"ok"]);
+        $this->assertSame($result,"ok");
+        
+        // Test for class controller.
+        $class = new class(){
+            public function withParam($name){
+                return $name;
+            }
+        };
+        $route->setController([$class::class,"withParam"]);
+        $result = $route->executeController(["name"=>"woufwouf"]);
+        $this->assertSame($result,"woufwouf");
+
+
+
+        // Test for class controller with constructor
+        $route->setController(function () {
+            $name = "wouwwouw";
+            $class = new class($name){
+                public $name;
+                public function __construct($name){
+                    $this->name = $name;
+                }
+                public function sayName(){
+                    return $this->name;
+                }
+            };
+            return $class->sayName();
+        });
+        $result = $route->executeController();
+        $this->assertSame($result,"wouwwouw");
+
+        // Test for class controller with constructor
+        // Passing data
+        $route->setController(function ($location) {
+            $name = "wouwwouw";
+            $class = new class($name){
+                public $name;
+                public function __construct($name){
+                    $this->name = $name;
+                }
+                public function sayName($location){
+                    return $this->name." ".$location;
+                }
+            };
+            return $class->sayName($location);
+        });
+        $result = $route->executeController(["location"=>"Baltimore"]);
+        $this->assertSame($result,"wouwwouw Baltimore");
+    }
 
   
 

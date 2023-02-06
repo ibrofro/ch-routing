@@ -67,7 +67,7 @@ class Router{
         return self::$routeCollection;
     }
 
-    public static function match ()
+    public static function match (callable $fn)
     {
         // Initialize collection.
         $collection = self::initializeCollection(self::$routesArr);
@@ -76,7 +76,12 @@ class Router{
         $request = new Request($driver);
         // Resolve the route
         $resolver = new Resolver($collection, $request);
-        $resolver->resolve();
+        $resolveResult = $resolver->resolve();
+        if(!empty($resolveResult)){
+            $fn($resolveResult,$request);
+        }else{
+            throw new \Exception("No matching");
+        }
 
         // match
         // if match execute callback.

@@ -81,13 +81,17 @@ final class ResolverTest extends TestCase{
         $this->uri = "http://www.test-random.com/test/first";
         $this->setupTestDependencies();
 
-        // Resolve the routes
+        // Resolver
         $resolver = new Resolver($routesCollection,$this->request);
-        $routeAccepted = $resolver->resolve();
         
         // Test accepted route.
+        $routeAccepted = $resolver->resolve();
         $this->assertSame($routeAccepted, $route1);
-        
+        // Test Scheme
+        $route1->setScheme("https");
+        $routeAccepted = $resolver->resolve();
+        $this->assertEmpty($routeAccepted);
+
 
     }
     public function testbuildRegexForRoute(){
