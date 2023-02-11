@@ -3,7 +3,7 @@ namespace Routing\Drivers;
 use Routing\Interfaces\RequestInterface;
 class SuperGlobalDriver implements RequestInterface{
 
-    protected $request; 
+    public $request; 
     public function __construct($request){
 
         $this->request = $request;
@@ -28,6 +28,10 @@ class SuperGlobalDriver implements RequestInterface{
     }
     public function getQueryString():?string{
         return $this->request->getQueryString();
+    }
+
+    public function getRequestObject(){
+        return $this->request;
     }
     
 }

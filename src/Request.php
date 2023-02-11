@@ -11,7 +11,7 @@ class Request {
     public $pathName;
     public $queryString;
     public $portNumber;
-    protected $driver; 
+    protected $driver;
     public function __construct(RequestInterface $driver){
 
         $this->driver = $driver;
@@ -22,6 +22,7 @@ class Request {
         $this->pathName = $driver->getPathname(); 
         $this->queryString = $driver->getQueryString(); 
         $this->portNumber = $driver->getPortNumber();
+
     
     }
     public function getFullUrl():string{
@@ -77,6 +78,8 @@ class Request {
         return $this->queryString;
     }
    
-    
+    public function getRequestObject(){
+        return $this->driver->getRequestObject();
+    }
     
 }

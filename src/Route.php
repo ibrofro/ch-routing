@@ -11,15 +11,56 @@ class Route {
     protected $additionnal;
     protected $method;
     protected $scheme;
+    /**
+     * The value of the captured part of the pathname.
+     * @var \stdClass
+     */
+    public \stdClass $captured;
+    
+    /**
+     * The captures set on the pathname like e.g => /price/{name}
+     *
+     * @var array
+     */
+    public array $capture = [];
+    /**
+     * The regex set by the user on route options 
+     * e.g => ["_regex" => ["name"=>/w+/]]
+     *
+     * @var array
+     */
+    public array $userRegex = [];
     public function __construct(string $pathname){
-        isset($pathname) ?: throw new \Exception("Pathname is not defined");    
         $this->setPathname($pathname);
     }
     public function setPathname(?string $pathname):self{
         isset($pathname) ?: throw new \Exception("Pathname is not defined");    
+        preg_match("/^\//",$pathname)?: throw new \Exception("invalid pathname: the pathname ".$pathname." must start by '/'");
         $this->pathname = $pathname;
+
         return $this;
     }
+    public function scanAndSetCapture(string $pathName):self{
+        $this->capture = [];
+        preg_match_all("#\{(.+?)\}#", $pathName, $matches,\PREG_OFFSET_CAPTURE | \PREG_SET_ORDER);
+        foreach ($matches as $item) {
+            $variable = $item[1][0];
+            // set the regex when the user defined one.
+            // if the user didn't specify a regex for 
+            // the capture we replace with a defautl one.
+            $regex = "[^\/]+";
+            if(isset($this->regex[$variable])){
+                $regex = $this->regex[$variable];
+            }
+            $this->capture[$variable] = $regex; 
+        }
+        return $this;                                                        
+    }
+    
+    public function getCapture():array{
+        return $this->capture;
+    }
+
     public function getPathname():string{
         return $this->pathname;
     }
@@ -30,9 +71,58 @@ class Route {
     public function getHost():string|null{
         return $this->host;
     }
-    public function setRegex(?array $regexArr):self{
-        $this->regex = $regexArr;
+    public function setRegex(array $regexArr):self{
+        foreach ($regexArr as $name => $value) {
+
+            // Check if regex is on the path.
+            $variableToFind = preg_quote($name);
+            $found = preg_match("/\{$variableToFind\}/", $this->pathname);
+            if($found != 1){
+                throw new \Exception('cannot add regex due to {'.$name.'} not defined on the path: '.$this->pathname);
+            }
+
+            // Check if user is not using option on the regex.
+            $this->preventUserNotUsingPCREOption($value);
+
+            // Check and remove the delimiter "/".
+            $this->checkDelimiter($value,"/");
+            $value = $this->trim($value,"/");
+
+            $this->regex[$name] = $value;
+        }
+
+        // Check if the delimiter is / e.g /[a-z]
+
+        $this->scanAndSetCapture($this->pathname);
         return $this;
+    }
+
+    public function preventUserNotUsingPCREOption($regex){
+        $optionFound = preg_match("/\/.+\/[iDmsxUAJu]/",$regex);
+        if($optionFound == 1){
+            throw new \Exception("Can't use option after regex, use PCRE inline option instead");
+        }
+    }
+    /**
+     * check the delimiter; 
+     * @param string $string
+     * @param string $delimiter
+     * @throws \Exception
+     * @return void
+     */
+    public function checkDelimiter($string,$delimiter):void{
+        if(strlen(trim($string,$delimiter)) !== (strlen($string)-2)){
+            throw new \Exception("The delimiter of regex must be / e.g ['name'=>'/[a-z]/']");
+        }        
+    }
+    /**
+     * Trim the string; 
+     * @param string $string
+     * @param string $delimiter
+     * @return string
+     */
+    public function trim($string,$delimiter){
+        return trim($string, $delimiter);
     }
     public function getRegex():array|null{
         return $this->regex;

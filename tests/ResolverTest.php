@@ -68,9 +68,9 @@ final class ResolverTest extends TestCase{
     }
     public function testResolve(){
         // Creating routes.
-        $route1 = new Route("test/first");
+        $route1 = new Route("/test/first");
         $route1->setHost("www.test-random.com");
-        $route2 = new Route("test/second");
+        $route2 = new Route("/test/second");
         $route2->setHost("www.test-random.com");
         $arrayOfRoutes[] = $route1;
         $arrayOfRoutes[] = $route2;
@@ -96,7 +96,7 @@ final class ResolverTest extends TestCase{
     }
     public function testbuildRegexForRoute(){
         // Creating routes.
-        $route1 = new Route("test/first");
+        $route1 = new Route("/test/first");
         $route1->setHost("www.test-random.com");
          // Setting up the uri
          $this->uri = "http://www.test-random.com/test/first";
@@ -106,16 +106,54 @@ final class ResolverTest extends TestCase{
         // Resolve the routes
         $resolver = new Resolver($routesCollection,$this->request);
         $regex = $resolver->buildRegexForRoute($route1);
-        $expectedRegex1 = "www\.test\-random\.com";
-        $expectedRegex2 = "test\/first";
-
+        $expectedRegex1 = "^www\.test\-random\.com$";
+        $expectedRegex2 = "^\/test\/first$";
+        // dd($expe)
         $this->assertCount(2, $regex);
-        $this->assertEquals($expectedRegex1, $regex[0]);
-        $this->assertEquals($expectedRegex2, $regex[1]);
+        $this->assertEquals($expectedRegex1, $regex["host"]);
+        $this->assertEquals($expectedRegex2, $regex["pathName"]);
 
     }
+    public function testescapeExcept(){
+        // Setting up the uri
+        $this->uri = "http://www.test-random.com/product/shoe/120/en";
+        $this->setupTestDependencies();
+        $route = new Route("/product/{name}/{price}/{lang}");
+        $routesCollection = new RouteCollection([$route]);
+        $resolver = new Resolver($routesCollection,$this->request);
+        $escaped = $resolver->escapeExcept($route->getPathname(),"/",["{","}"]);
+        $expect = "\/product\/{name}\/{price}\/{lang}";
+        $this->assertEquals($expect, $escaped);
+   }
+    public function testputCaptureOnPathName(){
+         // Setting up the uri
+         $this->uri = "http://www.test-random.com/product/shoe/120/en";
+         $this->setupTestDependencies();
 
-   
+        $route = new Route("/product/{name}/{price}/{lang}/{country}");
+        $routesCollection = new RouteCollection([$route]);
+        $route->setRegex(["name" => "/\w+/", "price" => "/\d+/","lang" => "/\w{2}/"]);
+        $resolver = new Resolver($routesCollection,$this->request);
+        $expected = "^\/product\/(?P<name>\w+)\/(?P<price>\d+)\/(?P<lang>\w{2})\/(?P<country>[^\/]+)$";
+        $pathName = $resolver->putCaptureOnPathName($route);
+        $this->assertEquals($expected, $pathName);
+    }
+    public function testbindCapturedValueToRoute(){
+        // Setting up the uri
+        $this->uri = "http://www.test-random.com/product/shoe/120/en/fr";
+        $this->setupTestDependencies();
+        $route = new Route("/product/{name}/{price}/{lang}/{country}");
+        $routesCollection = new RouteCollection([$route]);
+        $route->setRegex(["name" => "/\w+/", "price" => "/\d+/","lang" => "/\w{2}/"]);
+        $matches = ["name" => "shoe", "price" => "1200", "lang" => "en","country"=>"fr"];
+        $resolver = new Resolver($routesCollection,$this->request);
+        $resolver->bindCapturedValueToRoute($route, $matches);
+
+        $this->assertEquals("shoe", $route->captured->name);
+        $this->assertEquals("1200", $route->captured->price);
+        $this->assertEquals("en", $route->captured->lang);
+        $this->assertEquals("fr", $route->captured->country);
+    }
 
    
 
