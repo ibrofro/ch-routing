@@ -42,9 +42,10 @@ class Router{
         return $route;
 
     }
-    public static function get(string $pathname,array $obj = []){
+
+    protected static function initialize(string $pathname,$httpverbs,array $obj = []){
         // 1.Initialize the route.
-        $method = "get";
+        $method = $httpverbs;
         $route = new Route($pathname);
         $route->setMethod($method);
         // 2.The Destructor will set all the methods needed.
@@ -53,7 +54,21 @@ class Router{
         // 3.Add the route to the collection.
         array_push(self::$routesArr, $route);
     }
-
+    public static function get(string $pathname,array $obj = []){
+        self::initialize($pathname,"get", $obj);
+    }
+    public static function post(string $pathname,array $obj = []){
+        self::initialize($pathname,"post", $obj);
+    }
+    public static function put(string $pathname,array $obj = []){
+        self::initialize($pathname,"put", $obj);
+    }
+    public static function patch(string $pathname,array $obj = []){
+        self::initialize($pathname,"patch", $obj);
+    }
+    public static function delete(string $pathname,array $obj = []){
+        self::initialize($pathname,"delete", $obj);
+    }
     private static function initializeCollection(array $arr):RouteCollection{
 
         if(count($arr) == 0):
@@ -82,7 +97,7 @@ class Router{
         }else{
             throw new \Exception("No matching");
         }
-
+    
         // match
         // if match execute callback.
         // $fn($route, $request);

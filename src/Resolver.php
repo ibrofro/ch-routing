@@ -26,6 +26,9 @@ class Resolver {
             $regexArr["host"] = "^".preg_quote($route->getHost(),$delimiter)."$";
         }
 
+        if($route->getMethod()){
+            $regexArr["method"] = "^(?i:".preg_quote($route->getMethod(),$delimiter).")$";
+        }
         if($route->getPathname()){
             $regexArr["pathName"] = $this->putCaptureOnPathName($route);
         }
